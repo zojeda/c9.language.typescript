@@ -1,22 +1,22 @@
 define(function(require, exports, module) {
-    main.consumes = ["Plugin", "language"];
+    main.consumes = ["Plugin", "jsonalyzer"];
     main.provides = ["typescript"];
     return main;
 
     function main(options, imports, register) {
         var Plugin = imports.Plugin;
-        
+        console.log("==============================")
         /***** Initialization *****/
         
         var plugin = new Plugin("typescript.z.me", main.consumes);
-        var language = imports.language;
+        var jsonalyzer = imports.jsonalyzer;
 
         var emit = plugin.getEmitter();
         
         function load() {
             console.log('loading typescript plugin');
-            language.registerLanguageHandler(
-                "plugins/g9.language.typescript/lib/worker/typescript_handler"
+            jsonalyzer.registerServerHandler(
+                "plugins/c9.language.typescript/lib/server/typescript_handler"
             );
         }
         
@@ -30,7 +30,7 @@ define(function(require, exports, module) {
             load();
         });
         plugin.on("unload", function() {
-            language.unregisterLanguageHandler("plugins/g9.language.typescript/worker/typescript_handler");
+            jsonalyzer.registerServerHandler("plugins/c9.language.typescript/server/typescript_handler");
         });
         
         /***** Register and define API *****/
