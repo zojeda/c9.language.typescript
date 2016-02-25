@@ -1,0 +1,19 @@
+{
+  "name": "c9.typescript.language",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^1.7.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "plugins": {
+    "plugin": {}
+  },
+  "categories": ["miscellaneous"],
+
+  "author": "",
+  "license": "ISC"
+}
