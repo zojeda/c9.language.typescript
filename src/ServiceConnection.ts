@@ -1,9 +1,16 @@
+import WebSocketDriver from "./driver/WebSocketDriver";
+import StdIODriver from "./driver/StdIODriver";
+
 class ServiceConnection {
 	callbacks: {[seq: number] : (resp: ts.server.protocol.Response)=>any} = {};
-	static connect(driver : IDriver, onReady: (connection: ServiceConnection)=>any) {
+	static connect(driverName: string, onReady: (connection: ServiceConnection)=>any) {
+        let driver : IDriver;
+        switch (driverName) {
+            case "websocket": driver = new WebSocketDriver(); 
+            case "stdio": driver = new StdIODriver();
+        }
 		new ServiceConnection(driver, onReady)
 	}
-	
 	constructor(private driver : IDriver, onReady: (ServiceConnection)=>any) {
 		this.driver.connect(() => {
 			this.driver.setMessageHandler((message) => {

@@ -933,6 +933,7 @@ declare module "child_process" {
         custom?: any;
         env?: any;
         detached?: boolean;
+        shell?: boolean | string;
     }): ChildProcess;
     export function exec(command: string, options: {
         cwd?: string;

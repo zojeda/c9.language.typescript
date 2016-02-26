@@ -1,11 +1,11 @@
 import ServiceProxy from "./ServiceProxy";
 import ServiceConnection from "./ServiceConnection";
-import StdIODriver from "./driver/StdIODriver";
 
-let driver = new StdIODriver();
-ServiceConnection.connect(driver, (connenction) => {
+
+ServiceConnection.connect("stdio", (connenction) => {
 	let tsservice = new ServiceProxy(connenction);
-	tsservice.open("/home/zaca/Development/c9-ws/app.ts");
-	tsservice.projectInfo("/home/zaca/Development/c9-ws/app.ts", true)
+    let fileName = __dirname + "sample/Test.ts";
+	tsservice.open(fileName);
+	tsservice.projectInfo(fileName, true)
 		.then(console.log);
 });
