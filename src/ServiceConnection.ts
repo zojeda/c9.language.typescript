@@ -6,22 +6,38 @@ class ServiceConnection {
 
 	constructor(private driver : IDriver, onReady: (ServiceConnection)=>any) {
 		this.driver.connect(() => {
-			this.driver.setMessageHandler((message) => {
-			// console.log(message);
-			try{
-				var re = /{.*}/g;
-				var matches = message.match(re);
-				if(matches) {
-					let msg : ts.server.protocol.Message = JSON.parse(matches[0]);
-					if(msg.type === "response") {
-						let response = msg as ts.server.protocol.Response;
-						this.callbacks[response.request_seq](response.body);
-					}
-				}
-				} catch(error) {
-					console.log(error);
-				}
-			});
+            let partialMessage = "";
+            let expectedBodyLenght = 0;
+            let headerLength = 0;
+			this.driver.setMessageHandler((message: string) => {
+                // console.log(message);
+                if(partialMessage.length === 0) {
+                    // console.log(message, "-----------------");
+                    //header content expected
+                    let matches = message.match(/Content-Length: (\d+)\s*/);
+                    expectedBodyLenght = parseInt(matches[1]);
+                    headerLength = matches[0].length;
+                }
+                console.log("message[%d] | partialMessage[%d] | headerLength[%d] | bodylength[%d]",
+                    message.length, partialMessage.length, headerLength, expectedBodyLenght );
+                if((message.length+partialMessage.length) == (expectedBodyLenght+headerLength)) {
+                    try{
+                        let completeMsg = (partialMessage+message).substring(headerLength);
+                        let msg : ts.server.protocol.Message = JSON.parse(completeMsg);
+                        if(msg.type === "response") {
+                            let response = msg as ts.server.protocol.Response;
+                            this.callbacks[response.request_seq](response.body);
+                        } else {
+                            console.log("----\n"+completeMsg+"\n----");
+                        }
+                       partialMessage = "";
+                    } catch(error) {
+                        console.log(error);
+                    }
+                } else {
+                        partialMessage = partialMessage+message;
+                }
+            });
 			onReady(this);
 		});
 	}

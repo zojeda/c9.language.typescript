@@ -9,7 +9,7 @@ export default class StdIODriver implements IDriver {
 	}
 	setMessageHandler(onMessage: (message: string) => any): any {
 		this.tssserver.stdout.on("data", (message)=> {
-            console.log(message.toString());
+            // console.log(message.toString());
 			onMessage(message.toString());
 		});
 	}

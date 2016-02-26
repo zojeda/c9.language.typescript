@@ -4,4 +4,36 @@ class HelloWorld {
     }
 }
 
-new HelloWorld();
+new He 
+lloWo rld();
+
+a
+sdfasdf
+
+
+
+asdfa
+
+
+
+asdfasdf
+
+
+
+
+
+asdfasdf
+
+
+asdf
+
+
+
+asdf
+
+
+CSSStyleSheet
+
+
+
+CSSStyleShe
