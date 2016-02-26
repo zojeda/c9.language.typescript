@@ -1,3 +1,6 @@
+import "module";
+import 
+
 var PluginBase = require("plugins/c9.ide.language.jsonalyzer/worker/jsonalyzer_base_handler");
 
 var handler = module.exports = Object.create(PluginBase);
@@ -9,9 +12,7 @@ handler.languages = ["typescript"];
 handler.maxCallInterval = handler.CALL_INTERVAL_BASIC;
 
 handler.init = function(options, callback) {
-    console.log(process.release);
     callback();
-    
 };
 
 handler.analyzeCurrent = function(path, doc, ast, options, callback) {

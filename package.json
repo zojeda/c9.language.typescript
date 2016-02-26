@@ -2,7 +2,9 @@
   "name": "c9.typescript.language",
   "version": "0.0.1",
   "description": "",
-  "dependencies": {},
+  "dependencies": {
+    "promise": "^7.1.1"
+  },
   "devDependencies": {
     "typescript": "^1.7.5"
   },
@@ -12,8 +14,9 @@
   "plugins": {
     "plugin": {}
   },
-  "categories": ["miscellaneous"],
-
+  "categories": [
+    "miscellaneous"
+  ],
   "author": "",
   "license": "ISC"
 }

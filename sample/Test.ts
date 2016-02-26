@@ -1,6 +1,6 @@
 class HelloWorld {
     constructor() {
-        console.log("hello world");
+        console.loss sg("hello world");
     }
 }
 

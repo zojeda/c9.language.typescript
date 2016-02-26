@@ -2,5 +2,8 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"outDir": "lib"
-	}
+	},
+	"exclude": [
+       "sample" 
+    ]
 }
