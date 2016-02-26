@@ -1,15 +1,16 @@
 class ServiceConnection {
-	ws : WebSocket;
-	ready = false;
 	callbacks: {[seq: number] : (resp: ts.server.protocol.Response)=>any} = {};
-	constructor() {
-		this.ws = new WebSocket("ws://localhost:8001");
-		this.ws.onopen = () => {this.ready = true};
-		this.ws.onmessage = (message) => {
+	static connect(driver : IDriver, onReady: (connection: ServiceConnection)=>any) {
+		new ServiceConnection(driver, onReady)
+	}
+	
+	constructor(private driver : IDriver, onReady: (ServiceConnection)=>any) {
+		this.driver.connect(() => {
+			this.driver.setMessageHandler((message) => {
+			// console.log(message);
 			try{
 				var re = /{.*}/g;
-				
-				var matches = message.data.match(re)
+				var matches = message.match(re);
 				if(matches) {
 					let msg : ts.server.protocol.Message = JSON.parse(matches[0]);
 					if(msg.type === "response") {
@@ -17,14 +18,16 @@ class ServiceConnection {
 						this.callbacks[response.request_seq](response.body);
 					}
 				}
-			} catch(error) {
-				console.log(error);
-			}
-		};
+				} catch(error) {
+					console.log(error);
+				}
+			});
+			onReady(this);
+		});
 	}
 
 	sendRequest<Resp extends ts.server.protocol.Response>(request: ts.server.protocol.Request) {
-		this.ready && this.ws.send(JSON.stringify(request)+"\n");
+		this.driver.send(JSON.stringify(request)+"\n");
 	}
 
 	sendRequestResp<Resp>(request: ts.server.protocol.Request) : Promise<Resp> {
@@ -38,7 +41,7 @@ class ServiceConnection {
 				this.clear(request.seq);}
 			, 2000);
 		}
-		this.ready && this.ws.send(JSON.stringify(request)+"\n");
+		this.driver.send(JSON.stringify(request)+"\n");
 		return new Promise<Resp>(executor);
 	}
 

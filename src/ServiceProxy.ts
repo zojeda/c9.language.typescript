@@ -2,12 +2,9 @@ import ServiceConnection from "./ServiceConnection";
 
 class ServiceProxy {
 	seq = 0;
-	connection = new ServiceConnection();
-	increase_seq() {
-		let temp = this.seq;
-		this.seq += 1;
-		return temp;
-	}
+
+	constructor(private connection : ServiceConnection) {}
+
 	open(file: string, fileContent?: string) {
 		let openRequest : ts.server.protocol.OpenRequest = {
 			command: "open",
@@ -41,6 +38,13 @@ class ServiceProxy {
 			seq: this.increase_seq()
 		};
 	}
+	
+	private increase_seq() {
+		let temp = this.seq;
+		this.seq += 1;
+		return temp;
+	}
+
 }
 
 export default ServiceProxy;
