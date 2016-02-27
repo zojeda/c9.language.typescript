@@ -109,12 +109,9 @@ declare namespace ts.server.protocol {
     export interface ProjectInfoRequest extends Request {
         arguments: ProjectInfoRequestArgs;
     }
-    
-    
 
     /** 
       * Response message body for "projectInfo" request
-      {       "command": "projectInfo",       "arguments": {"configFileName": "/home/zaca/Development/dockerPDE/pde-server/tsconfig.json"},     "type": "request",      "seq": 1}% 
       */
     export interface ProjectInfo {
         /**
