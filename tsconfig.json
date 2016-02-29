@@ -1,11 +1,15 @@
 {
 	"version": "1.8.0",
 	"compilerOptions": {
-		"module": "commonjs",
-		"outDir": "lib"
+		"module": "amd",
+		"outDir": "lib",
+		"sourceMap": true,
+		"declaration": true
 	},
 	"exclude": [
-       "sample",
-			 "node_modules" 
+    "typings/main.d.ts",
+    "typings/main",
+		"node_modules",
+		"sample"
     ]
 }
