@@ -1,23 +1,29 @@
 {
-  "name": "c9.typescript.language",
+  "name": "language.typescript",
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "es6-promise": "^3.1.2",
-    "tsserver-client": "0.0.4"
-  },
-  "devDependencies": {
-    "typescript": "^1.7.5"
+    "tsserver-client": "0.0.7"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "installer": "install.js",
   "plugins": {
-    "plugin": {}
+    "typescript": {
+      "language.typescript": {}
+    }
+  },
+  "engines": {
+    "c9": ">=3.0.0"
   },
   "categories": [
     "miscellaneous"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zojeda/language.typescript.git"
+  },
   "author": {
     "email": "zojeda@gmail.com",
     "name": "Zacarias F. Ojeda"

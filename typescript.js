@@ -16,7 +16,7 @@ define(function(require, exports, module) {
         function load() {
             console.log('loading typescript plugin');
             jsonalyzer.registerServerHandler(
-                "plugins/c9.language.typescript/lib/server/typescript_handler"
+                "plugins/language.typescript/lib/server/typescript_handler"
             );
         }
         
@@ -30,7 +30,7 @@ define(function(require, exports, module) {
             load();
         });
         plugin.on("unload", function() {
-            jsonalyzer.registerServerHandler("plugins/c9.language.typescript/server/typescript_handler");
+            jsonalyzer.registerServerHandler("plugins/language.typescript/lib/server/typescript_handler");
         });
         
         /***** Register and define API *****/
