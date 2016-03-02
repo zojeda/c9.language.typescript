@@ -7,10 +7,10 @@ handler.languages = ["typescript"];
 
 handler.maxCallInterval = handler.CALL_INTERVAL_BASIC;
 
-// var TSService = require(process.env.HOME+"/tsserver-client");
-// let tsservice;
-import TSService from "tsserver-client";
-let tsservice: TSService;
+var TSService = require(process.env.HOME + "/.c9/node_modules/tsserver-client/lib/TSService").default;
+let tsservice;
+// import TSService from "tsserver-client";
+// let tsservice: TSService;
 handler.init = function(options, callback) {
   TSService.connect("stdio", (serviceProxy) => {
     tsservice = serviceProxy;
@@ -18,17 +18,35 @@ handler.init = function(options, callback) {
   });
 };
 
-handler.analyzeCurrent = function(path, doc, ast, options, callback) {
-  let projectInfo = "aaaa1aa";
-  tsservice.open(path);
 
-  tsservice.projectInfo(path, true).then(pi => {
-    projectInfo = JSON.stringify(pi);
-    var errors = [{
-      pos: { sl: 0, sc: 0, el: 0, ec: 10 },
-      message: "some error " + projectInfo,
-      level: "error"
-    }];
-    callback(null, null, errors);
-  });
+handler.analyzeCurrent = function(path, doc, ast, options, callback) {
+  // console.log(Object.keys(doc));
+  if(options.isSave) {
+    tsservice.open(path);
+  } else {
+    tsservice.open(path, doc);
+  }
+  tsservice.geterr([path], 1)
+    .subscribe(diagnostics => {
+      setTimeout(()=> {
+        let markers = [];
+        diagnostics.forEach(diag => {
+          markers.push({
+            pos: {
+              sl: diag.start.line - 1,
+              sc: diag.start.offset - 1,
+              el: diag.end.line - 1,
+              ec: diag.end.offset - 1
+            },
+            message: diag.text,
+            level: "error"
+          });
+        });
+        callback(null, {
+            name: "foo()",
+            replaceText: "foo",
+            icon: "method",
+        }, markers);
+      }, 20);
+    });
 };

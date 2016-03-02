@@ -2,7 +2,8 @@
 	"version": "1.8.0",
 	"compilerOptions": {
 		"module": "commonjs",
-		"outDir": "lib/server"
+		"outDir": "lib/server",
+		"watch": true
 	},
 	"exclude": [
     "typings/main.d.ts",
