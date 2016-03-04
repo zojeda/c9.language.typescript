@@ -28,5 +28,9 @@
     "email": "zojeda@gmail.com",
     "name": "Zacarias F. Ojeda"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "ts-loader": "^0.8.1",
+    "webpack": "^1.12.14"
+  }
 }

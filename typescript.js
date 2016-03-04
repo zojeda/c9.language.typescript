@@ -1,46 +1,39 @@
-define(function(require, exports, module) {
-    main.consumes = ["Plugin", "jsonalyzer"];
-    main.provides = ["typescript"];
-    return main;
+define(function (require, exports, module) {
+  main.consumes = ["Plugin", "language"];
+  main.provides = ["typescript"];
+  return main;
 
-    function main(options, imports, register) {
-        var Plugin = imports.Plugin;
-        console.log("==============================")
-        /***** Initialization *****/
-        
-        var plugin = new Plugin("typescript.z.me", main.consumes);
-        var jsonalyzer = imports.jsonalyzer;
+  function main(options, imports, register) {
+    var Plugin = imports.Plugin;
+    console.log("===========   ==============")
+    /***** Initialization *****/
 
-        var emit = plugin.getEmitter();
+    var plugin = new Plugin("typescript.z.me", main.consumes);
+    var language = imports.language;
+
+    var emit = plugin.getEmitter();
+
         
-        function load() {
-            console.log('loading typescript plugin');
-            jsonalyzer.registerServerHandler(
-                "plugins/language.typescript/lib/server/typescript_handler"
-            );
-        }
+    /***** Lifecycle *****/
+
+    plugin.on("load", function () {
+      console.log('== loading typescript plugin ==');
+      language.registerLanguageHandler(
+        "plugins/language.typescript/lib/worker/typescript_handler"
+        );
+    });
+    plugin.on("unload", function () {
+      language.unregisterLanguageHandler("plugins/language.typescript/lib/worker/typescript_handler");
+    });
         
-        /***** Methods *****/
-        
-        
-        
-        /***** Lifecycle *****/
-        
-        plugin.on("load", function() {
-            load();
-        });
-        plugin.on("unload", function() {
-            jsonalyzer.registerServerHandler("plugins/language.typescript/lib/server/typescript_handler");
-        });
-        
-        /***** Register and define API *****/
-        
-        plugin.freezePublicAPI({
-            
-        });
-        
-        register(null, {
-            "typescript": plugin
-        });
-    }
+    /***** Register and define API *****/
+
+    plugin.freezePublicAPI({
+
+    });
+
+    register(null, {
+      "typescript": plugin
+    });
+  }
 });
