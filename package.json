@@ -6,6 +6,7 @@
     "tsserver-client": "0.0.7"
   },
   "scripts": {
+    "build": "rimraf typings && typings install && webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "installer": "install.js",
