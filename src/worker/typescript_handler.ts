@@ -101,7 +101,7 @@ handler.complete = function(doc, ast, pos, options, callback) {
             index++;
           });
         }),
-      callback(null, allCompletions)
+      callback(null, allCompletions);
     },
     (error) => callback(error)
     );

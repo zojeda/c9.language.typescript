@@ -6,7 +6,7 @@ define(function (require, exports, module) {
         "description": "TSServer client using stdio for typescript server side handler",
         "cwd": "~/.c9"
     }, {
-        "npm": "tsserver-client@0.0.5"
+        "npm": "tsserver-client@0.0.9"
     });
 		// Show the installation screen
 		session.start();
