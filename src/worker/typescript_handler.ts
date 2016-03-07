@@ -26,16 +26,18 @@ handler.init = function(options) {
 
 };
 
-let MAX_CALL_INTERVAL = 2000;
+let MIN_CALL_INTERVAL = 3000;
 handler.analyze = function(doc, ast, options, callback) {
+  if (options.minimalAnalysis)
+      return callback();
 	
   let file = this.workspaceDir + options.path;
   let nowTime = new Date();
-  if(!this.lastCallTime || (nowTime.getTime() - this.lastCallTime)>MAX_CALL_INTERVAL ) {
+  if(!this.lastCallTime || (nowTime.getTime() - this.lastCallTime)>MIN_CALL_INTERVAL ) {
     this.lastCallTime = nowTime.getTime();
     console.log("analyzeCurrent : ",  nowTime)
     tsservice.open(file, doc);
-    tsservice.geterr([file], 200)
+    tsservice.geterr([file], 2000)
       .subscribe(diagnostics => {
         var markers = [];
         diagnostics.forEach(diag => {
@@ -59,7 +61,7 @@ handler.analyze = function(doc, ast, options, callback) {
         callback(error);
       });
   } else {
-    callback(null, this.lastMarkers);
+      return callback(null, this.lastMarkers);
   }
 };
 
