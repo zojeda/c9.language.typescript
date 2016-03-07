@@ -1,10 +1,12 @@
 module.exports = {
 	context: __dirname + "/src",
-	entry: "./worker/typescript_handler.ts",
+	entry: {
+		handler: "./worker/typescript_handler.ts"
+	},
 	output: {
 		path: __dirname + "/lib/worker",
 		libraryTarget: "amd",
-		filename: "typescript_handler.js"
+		filename: "typescript_[name].js"
 	},
 	resolve: {
     // Add `.ts` and `.tsx` as a resolvable extension.

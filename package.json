@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "dependencies": {
-    "tsserver-client": "0.0.7"
+    "tsserver-client": "0.0.10"
   },
   "scripts": {
     "build": "rimraf typings && typings install && webpack",
@@ -29,7 +29,7 @@
     "email": "zojeda@gmail.com",
     "name": "Zacarias F. Ojeda"
   },
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "ts-loader": "^0.8.1",
     "webpack": "^1.12.14"

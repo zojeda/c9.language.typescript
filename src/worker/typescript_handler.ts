@@ -28,12 +28,14 @@ handler.init = function(options) {
 
 let MAX_CALL_INTERVAL = 2000;
 handler.analyze = function(doc, ast, options, callback) {
-  let path = this.workspaceDir + options.path;
-  let nowTime = new Date().getTime();
-  if (!this.lastAnalysisTriggered || (nowTime - this.lastAnalysisTriggered) > MAX_CALL_INTERVAL) {
-    tsservice.open(path, doc);
-    this.lastAnalysisTriggered = nowTime;
-    tsservice.geterr([path], 1)
+	
+  let file = this.workspaceDir + options.path;
+  let nowTime = new Date();
+  if(!this.lastCallTime || (nowTime.getTime() - this.lastCallTime)>MAX_CALL_INTERVAL ) {
+    this.lastCallTime = nowTime.getTime();
+    console.log("analyzeCurrent : ",  nowTime)
+    tsservice.open(file, doc);
+    tsservice.geterr([file], 200)
       .subscribe(diagnostics => {
         var markers = [];
         diagnostics.forEach(diag => {
@@ -48,6 +50,8 @@ handler.analyze = function(doc, ast, options, callback) {
             level: "error"
           });
         });
+        this.lastMarkers = markers;
+        console.log(markers.length);
         callback(null, markers);
       },
       error => {
@@ -55,9 +59,8 @@ handler.analyze = function(doc, ast, options, callback) {
         callback(error);
       });
   } else {
-    callback();
+    callback(null, this.lastMarkers);
   }
-
 };
 
 //{"command":"open","type":"request","seq":82,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/app.ts"}}
@@ -100,7 +103,7 @@ handler.complete = function(doc, ast, pos, options, callback) {
             };
             index++;
           });
-        }),
+        }, error => console.debug(error) ),
       callback(null, allCompletions);
     },
     (error) => callback(error)

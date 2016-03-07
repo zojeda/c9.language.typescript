@@ -8,7 +8,7 @@ define(function (require, exports, module) {
     console.log("===========   ==============")
     /***** Initialization *****/
 
-    var plugin = new Plugin("typescript.z.me", main.consumes);
+    var plugin = new Plugin("zojeda@gmail.com", main.consumes);
     var language = imports.language;
 
     var emit = plugin.getEmitter();
