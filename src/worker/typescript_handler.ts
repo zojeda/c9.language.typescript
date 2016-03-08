@@ -26,42 +26,44 @@ handler.init = function(options) {
 
 };
 
-let MIN_CALL_INTERVAL = 3000;
+let MIN_CALL_INTERVAL = 1;
 handler.analyze = function(doc, ast, options, callback) {
   if (options.minimalAnalysis)
-      return callback();
-	
+    return callback();
+
   let file = this.workspaceDir + options.path;
   let nowTime = new Date();
-  if(!this.lastCallTime || (nowTime.getTime() - this.lastCallTime)>MIN_CALL_INTERVAL ) {
+  if (!this.lastCallTime || (nowTime.getTime() - this.lastCallTime) > MIN_CALL_INTERVAL) {
     this.lastCallTime = nowTime.getTime();
-    console.log("analyzeCurrent : ",  nowTime)
+    console.log("analyzeCurrent : ", nowTime)
     tsservice.open(file, doc);
-    tsservice.geterr([file], 2000)
+    tsservice.geterr([file], 1)
+//      .timeout(1000)
       .subscribe(diagnostics => {
-        var markers = [];
-        diagnostics.forEach(diag => {
-          markers.push({
-            pos: {
-              sl: diag.start.line - 1,
-              sc: diag.start.offset - 1,
-              el: diag.end.line - 1,
-              ec: diag.end.offset - 1
-            },
-            message: diag.text,
-            level: "error"
+          var markers = [];
+          diagnostics.forEach(diag => {
+            markers.push({
+              pos: {
+                sl: diag.start.line - 1,
+                sc: diag.start.offset - 1,
+                el: diag.end.line - 1,
+                ec: diag.end.offset - 1
+              },
+              message: diag.text,
+              level: "error"
+            });
           });
+          this.lastMarkers = markers;
+          console.log(markers.length);
+          callback(null, markers);
+        },
+        error => {
+          console.error(error);
+          callback(error);
         });
-        this.lastMarkers = markers;
-        console.log(markers.length);
-        callback(null, markers);
-      },
-      error => {
-        console.error(error);
-        callback(error);
-      });
-  } else {
-      return callback(null, this.lastMarkers);
+  }
+  else {
+    return callback(null, this.lastMarkers);
   }
 };
 
@@ -78,7 +80,7 @@ handler.complete = function(doc, ast, pos, options, callback) {
   tsservice.completions(file, line, offset)
     .subscribe(completions => {
       let allCompletions = [];
-      let consideredCompletions = completions.slice(0, 15);
+      let consideredCompletions = completions.slice(0, 50);
       consideredCompletions.forEach(completion => {
         allCompletions.push({
           name: completion.name,
@@ -88,7 +90,7 @@ handler.complete = function(doc, ast, pos, options, callback) {
           priority: 1
         });
       });
-      tsservice.completionEntryDetails(file, line, offset, consideredCompletions.map(c=> c.name))
+      tsservice.completionEntryDetails(file, line, offset, consideredCompletions.map(c => c.name))
         .subscribe(completions => {
           let index = 0;
           completions.forEach(completion => {
@@ -98,18 +100,19 @@ handler.complete = function(doc, ast, pos, options, callback) {
               icon: completion.kind + (completion.kindModifiers === "private" ? "2" : ""),
               doc: completion.documentation && completion.documentation.map(dp => dp.text).join(""),
               docHead: completion.displayParts.map(dp => dp.text).join(""),
-              meta: completion.name,
+              meta: completion.displayParts.map(dp => dp.text).join(""),
               isContextual: true,
-              guessTooltip: getCompletionTooltips(file, line, offset, completion),
+              guessTooltip: completion.displayParts.map(dp => dp.text).join(""),
               priority: 1
-            };
+            }
             index++;
           });
-        }, error => console.debug(error) ),
-      callback(null, allCompletions);
-    },
-    (error) => callback(error)
-    );
+          callback(null, allCompletions);
+        }, error => {
+          console.debug(error)
+          callback(null, allCompletions);
+        })
+    }, (error) => callback(error));
 };
 
 //
@@ -119,7 +122,7 @@ function getCompletionTooltips(file, line, offset, completion: ts.server.protoco
   if (completion.kind === "method") {
     tsservice.signatureHelp(file, line, offset + completion.name.length + 2)
       .subscribe(signatureHelperItems => {
-        guessTooltip = signatureHelperItems.items.map((item) => item.parameters.map(param=> param.displayParts.map(dp=> dp.text)).join("")).join(" ");
+        guessTooltip = signatureHelperItems.items.map((item) => item.parameters.map(param => param.displayParts.map(dp => dp.text)).join("")).join(" ");
         console.log(guessTooltip);
       }, err => console.debug(err));
   }
@@ -140,9 +143,5 @@ handler.jumpToDefinition = function(doc, ast, pos, options, callback) {
         column: definition.start.offset - 1,
         path: definition.file
       });
-    },
-    (error) => console.error(error)
-    );
+    }, (error) => console.error(error));
 };
-
-
