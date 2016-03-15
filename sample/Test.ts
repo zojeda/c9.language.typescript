@@ -1,39 +1,13 @@
 class HelloWorld {
+    private nombre: string;
+    private colab = new Colab("algo de texto")
+    
     constructor() {
-        console.loss sg("hello world");
+        this.nombre = "algo";
+        this.colab.aMethod(this.nombre);
     }
+    
+    /*
+     esto parece que funciona sin problemas....
+    */
 }
-
-new He 
-lloWo rld();
-
-a
-sdfasdf
-
-
-
-asdfa
-
-
-
-asdfasdf
-
-
-
-
-
-asdfasdf
-
-
-asdf
-
-
-
-asdf
-
-
-CSSStyleSheet
-
-
-
-CSSStyleShe

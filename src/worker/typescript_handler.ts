@@ -3,6 +3,7 @@ var workerUtil = require("plugins/c9.ide.language/worker_util");
 var handler = Object.create(PluginBase);
 export = handler;
 
+
 handler.handlesLanguage = function(language) {
   return language === "typescript";
 };
@@ -10,67 +11,51 @@ handler.handlesLanguage = function(language) {
 import TSService = require("tsserver-client");
 let tsservice: TSService;
 
-handler.init = function(options) {
-  // workerUtil.spawn("tsserver-client", [], function(err, process) {
-  //   if (err) {
-  //     throw err;
-  //   } ;
-  //   console.log(process.pid);
-  //   process.stdout.on("data", function(chunk) {
-  //       console.log(chunk);
-  //   });
+handler.init = function(callback) {
   TSService.connect("websocket", (service) => {
     tsservice = service;
+    callback();
   });
-  // });
-
 };
 
-let MIN_CALL_INTERVAL = 1;
+let markers = [];
+
 handler.analyze = function(doc, ast, options, callback) {
-  if (options.minimalAnalysis)
+  if (options.minimalAnalysis) {
     return callback();
+  }
 
   let file = this.workspaceDir + options.path;
   let nowTime = new Date();
-  if (!this.lastCallTime || (nowTime.getTime() - this.lastCallTime) > MIN_CALL_INTERVAL) {
-    this.lastCallTime = nowTime.getTime();
-    console.log("analyzeCurrent : ", nowTime)
-    tsservice.open(file, doc);
-    tsservice.geterr([file], 1)
-//      .timeout(1000)
-      .subscribe(diagnostics => {
-          var markers = [];
-          diagnostics.forEach(diag => {
-            markers.push({
-              pos: {
-                sl: diag.start.line - 1,
-                sc: diag.start.offset - 1,
-                el: diag.end.line - 1,
-                ec: diag.end.offset - 1
-              },
-              message: diag.text,
-              level: "error"
-            });
-          });
-          this.lastMarkers = markers;
-          console.log(markers.length);
-          callback(null, markers);
-        },
-        error => {
-          console.error(error);
-          callback(error);
+  markers.length = 0;
+  tsservice.open(file, doc);
+  tsservice.geterr([file], 50)
+  //      .timeout(1000)
+    .subscribe(diagnostics => {
+      diagnostics.forEach(diag => {
+        markers.push({
+          pos: {
+            sl: diag.start.line - 1,
+            sc: diag.start.offset - 1,
+            ec: diag.end.offset - 1
+          },
+          message: diag.text,
+          type: "error",
+          level: "error"
         });
-  }
-  else {
-    return callback(null, this.lastMarkers);
-  }
+      });
+      callback(null, markers);
+    },
+    error => {
+      console.error(error);
+    });
 };
 
-//{"command":"open","type":"request","seq":82,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/app.ts"}}
-//{"command":"open","type":"request","seq":82,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/Colab.ts"}}
-//{"command":"completions","type":"request","seq":78,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/app.ts","line":14,"offset":23}}
-//{"command":"completionEntryDetails","type":"request","seq":78,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/app.ts","line":14,"offset":23,"entryNames":["someMethod"]}}
+
+// //{"command":"open","type":"request","seq":82,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/app.ts"}}
+// //{"command":"open","type":"request","seq":82,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/Colab.ts"}}
+// //{"command":"completions","type":"request","seq":78,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/app.ts","line":14,"offset":23}}
+// //{"command":"completionEntryDetails","type":"request","seq":78,"arguments":{"file":"/home/zaca/Development/c9-ws/sample/app.ts","line":14,"offset":23,"entryNames":["someMethod"]}}
 handler.complete = function(doc, ast, pos, options, callback) {
   let file = this.workspaceDir + options.path;
   let line = pos.row + 1;
@@ -102,7 +87,7 @@ handler.complete = function(doc, ast, pos, options, callback) {
               docHead: completion.displayParts.map(dp => dp.text).join(""),
               meta: completion.displayParts.map(dp => dp.text).join(""),
               isContextual: true,
-              guessTooltip: completion.displayParts.map(dp => dp.text).join(""),
+              guessTooltip: true,
               priority: 1
             }
             index++;
@@ -112,7 +97,7 @@ handler.complete = function(doc, ast, pos, options, callback) {
           console.debug(error)
           callback(null, allCompletions);
         })
-    }, (error) => callback(error));
+    }, (error) => callback());
 };
 
 //
@@ -120,7 +105,7 @@ handler.complete = function(doc, ast, pos, options, callback) {
 function getCompletionTooltips(file, line, offset, completion: ts.server.protocol.CompletionEntryDetails) {
   let guessTooltip = completion.name;
   if (completion.kind === "method") {
-    tsservice.signatureHelp(file, line, offset + completion.name.length + 2)
+    tsservice.signatureHelp(file, line, offset + completion.name.length+2)
       .subscribe(signatureHelperItems => {
         guessTooltip = signatureHelperItems.items.map((item) => item.parameters.map(param => param.displayParts.map(dp => dp.text)).join("")).join(" ");
         console.log(guessTooltip);

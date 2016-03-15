@@ -9,6 +9,7 @@
     "typings/main",
 		"node_modules",
 		"sample",
-		"lib"
+		"lib",
+		".c9"
     ]
 }

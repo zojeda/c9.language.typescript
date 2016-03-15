@@ -21,6 +21,7 @@ module.exports = {
     ]
   },
 	externals: [
-		/plugins\/c9.*/
+		/plugins\/c9.*/,
+		"engine.io-client"
 	]
 }
